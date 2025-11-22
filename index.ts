@@ -56,7 +56,7 @@ const plugin: Plugin = (async (ctx) => {
     const stateManager = new StateManager()
     const toolParametersCache = new Map<string, any>() // callID -> parameters
     const modelCache = new Map<string, { providerID: string; modelID: string }>() // sessionID -> model info
-    const janitor = new Janitor(ctx.client, stateManager, logger, toolParametersCache, config.protectedTools, modelCache, config.model)
+    const janitor = new Janitor(ctx.client, stateManager, logger, toolParametersCache, config.protectedTools, modelCache, config.model, config.showModelErrorToasts)
 
     const cacheToolParameters = (messages: any[], component: string) => {
         for (const message of messages) {

@@ -13,7 +13,8 @@ export class Janitor {
         private toolParametersCache: Map<string, any>,
         private protectedTools: string[],
         private modelCache: Map<string, { providerID: string; modelID: string }>,
-        private configModel?: string // Format: "provider/model"
+        private configModel?: string, // Format: "provider/model"
+        private showModelErrorToasts: boolean = true // Whether to show toast for model errors
     ) { }
 
     async run(sessionID: string) {
@@ -186,17 +187,9 @@ export class Janitor {
             // Try to get model from cache first, otherwise extractModelFromSession won't find it
             const cachedModelInfo = this.modelCache.get(sessionID)
             const sessionModelInfo = extractModelFromSession(sessionInfo, this.logger)
-            let currentModelInfo = cachedModelInfo || sessionModelInfo
+            const currentModelInfo = cachedModelInfo || sessionModelInfo
 
-            // Skip GitHub Copilot for background analysis - it has expensive usage
-            if (currentModelInfo && currentModelInfo.providerID === 'github-copilot') {
-                this.logger.info("janitor", "Skipping GitHub Copilot for analysis (expensive), forcing fallback", {
-                    sessionID,
-                    originalProvider: currentModelInfo.providerID,
-                    originalModel: currentModelInfo.modelID
-                })
-                currentModelInfo = undefined // Force fallback to cheaper model
-            } else if (cachedModelInfo) {
+            if (cachedModelInfo) {
                 this.logger.debug("janitor", "Using cached model info", {
                     sessionID,
                     providerID: cachedModelInfo.providerID,
@@ -209,9 +202,37 @@ export class Janitor {
             this.logger.info("janitor", "Model selected for analysis", {
                 sessionID,
                 modelInfo: modelSelection.modelInfo,
-                tier: modelSelection.tier,
+                source: modelSelection.source,
                 reason: modelSelection.reason
             })
+
+            // Show toast if we had to fallback from a failed model
+            if (modelSelection.failedModel && this.showModelErrorToasts) {
+                try {
+                    await this.client.tui.showToast({
+                        body: {
+                            title: "DCP: Model fallback",
+                            message: `${modelSelection.failedModel.providerID}/${modelSelection.failedModel.modelID} failed\nUsing ${modelSelection.modelInfo.providerID}/${modelSelection.modelInfo.modelID}`,
+                            variant: "info",
+                            duration: 5000
+                        }
+                    })
+                    this.logger.info("janitor", "Toast notification shown for model fallback", {
+                        failedModel: modelSelection.failedModel,
+                        selectedModel: modelSelection.modelInfo
+                    })
+                } catch (toastError: any) {
+                    this.logger.error("janitor", "Failed to show toast notification", {
+                        error: toastError.message
+                    })
+                    // Don't fail the whole operation if toast fails
+                }
+            } else if (modelSelection.failedModel && !this.showModelErrorToasts) {
+                this.logger.info("janitor", "Model fallback occurred but toast disabled by config", {
+                    failedModel: modelSelection.failedModel,
+                    selectedModel: modelSelection.modelInfo
+                })
+            }
 
             // Log comprehensive stats before AI call
             this.logger.info("janitor", "Preparing AI analysis", {

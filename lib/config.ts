@@ -10,12 +10,14 @@ export interface PluginConfig {
     debug: boolean
     protectedTools: string[]
     model?: string // Format: "provider/model" (e.g., "anthropic/claude-haiku-4-5")
+    showModelErrorToasts?: boolean // Show toast notifications when model selection fails
 }
 
 const defaultConfig: PluginConfig = {
     enabled: true, // Plugin is enabled by default
     debug: false, // Disable debug logging by default
-    protectedTools: ['task'] // Tools that should never be pruned
+    protectedTools: ['task'], // Tools that should never be pruned
+    showModelErrorToasts: true // Show model error toasts by default
 }
 
 const CONFIG_DIR = join(homedir(), '.config', 'opencode')
@@ -57,6 +59,10 @@ function createDefaultConfig(): void {
   // NOTE: Anthropic OAuth sonnet 4+ tier models are currently not supported
   // "model": "anthropic/claude-haiku-4-5",
 
+  // Show toast notifications when model selection fails and falls back
+  // Set to false to disable these informational toasts
+  "showModelErrorToasts": true,
+
   // List of tools that should never be pruned from context
   // The 'task' tool is protected by default to preserve subagent coordination
   "protectedTools": ["task"]
@@ -89,7 +95,8 @@ export function getConfig(): PluginConfig {
             enabled: userConfig.enabled ?? defaultConfig.enabled,
             debug: userConfig.debug ?? defaultConfig.debug,
             protectedTools: userConfig.protectedTools ?? defaultConfig.protectedTools,
-            model: userConfig.model
+            model: userConfig.model,
+            showModelErrorToasts: userConfig.showModelErrorToasts ?? defaultConfig.showModelErrorToasts
         }
     } catch (error: any) {
         // Log errors to file (always enabled for config errors)
