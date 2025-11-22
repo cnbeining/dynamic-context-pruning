@@ -39,7 +39,7 @@ async function isSubagentSession(
 }
 
 const plugin: Plugin = (async (ctx) => {
-    const config = getConfig()
+    const config = getConfig(ctx)
 
     // Exit early if plugin is disabled
     if (!config.enabled) {
@@ -170,7 +170,8 @@ const plugin: Plugin = (async (ctx) => {
         debug: config.debug,
         protectedTools: config.protectedTools,
         model: config.model,
-        configFile: join(homedir(), ".config", "opencode", "dcp.jsonc"),
+        globalConfigFile: join(homedir(), ".config", "opencode", "dcp.jsonc"),
+        projectConfigFile: ctx.directory ? join(ctx.directory, ".opencode", "dcp.jsonc") : "N/A",
         logDirectory: join(homedir(), ".config", "opencode", "logs", "dcp"),
         globalFetchWrapped: true
     })

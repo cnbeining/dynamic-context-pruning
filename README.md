@@ -27,7 +27,12 @@ Restart OpenCode. The plugin will automatically start optimizing your sessions.
 
 ## Configuration
 
-The plugin creates a configuration file at `~/.config/opencode/dcp.jsonc` on first run. You can edit this file to customize the plugin's behavior.
+The plugin supports both global and project-level configuration:
+
+- **Global:** `~/.config/opencode/dcp.jsonc` - Applies to all OpenCode sessions
+- **Project:** `.opencode/dcp.jsonc` - Applies only to the current project
+
+Project configuration takes precedence over global configuration. The plugin creates a default global configuration file on first run.
 
 ```jsonc
 {
@@ -42,6 +47,39 @@ The plugin creates a configuration file at `~/.config/opencode/dcp.jsonc` on fir
   "protectedTools": ["task"]
 }
 ```
+
+### Configuration Hierarchy
+
+1. **Defaults** - Built-in plugin defaults
+2. **Global config** (`~/.config/opencode/dcp.jsonc`) - Overrides defaults
+3. **Project config** (`.opencode/dcp.jsonc`) - Overrides global config
+
+This allows you to:
+- Set global defaults for all projects
+- Override settings per-project (e.g., disable for sensitive projects, use different models)
+- Commit project config to version control for team consistency
+
+### Creating Project-Level Config
+
+To create a project-specific configuration:
+
+1. Create `.opencode` directory in your project root (if it doesn't exist)
+2. Create `dcp.jsonc` file inside `.opencode/`
+3. Add your project-specific settings
+
+```bash
+# In your project directory
+mkdir -p .opencode
+cat > .opencode/dcp.jsonc << 'EOF'
+{
+  // Project-specific DCP settings
+  "debug": true,
+  "protectedTools": ["task", "read"]
+}
+EOF
+```
+
+The global config (`~/.config/opencode/dcp.jsonc`) is automatically created on first run. Project configs are opt-in and must be created manually.
 
 ### Configuration Options
 
@@ -85,7 +123,7 @@ If you want to ensure a specific version is always used, you can pin it in your 
 ```json
 {
   "plugin": [
-    "@tarquinen/opencode-dcp@0.1.11"
+    "@tarquinen/opencode-dcp@0.2.5"
   ]
 }
 ```
