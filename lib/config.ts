@@ -89,7 +89,10 @@ function createDefaultConfig(): void {
   // Enable or disable the Dynamic Context Pruning plugin
   "enabled": true,
 
-  // Enable debug logging to ~/.config/opencode/logs/dcp/YYYY-MM-DD.log
+  // Enable debug logging to ~/.config/opencode/logs/dcp/
+  // Outputs include:
+  // - daily/YYYY-MM-DD.log (plugin activity, decisions, errors)
+  // - ai-context/*.json (messages sent to AI after pruning)
   "debug": false,
 
   // Optional: Specify a model to use for analysis instead of the session model

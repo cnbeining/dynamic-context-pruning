@@ -46,7 +46,7 @@ Restart OpenCode. The plugin will automatically start optimizing your sessions.
 ### Available Options
 
 - **`enabled`** (boolean, default: `true`) - Enable/disable the plugin
-- **`debug`** (boolean, default: `false`) - Enable detailed logging to `~/.config/opencode/logs/dcp/YYYY-MM-DD.log`
+- **`debug`** (boolean, default: `false`) - Enable detailed logging to `~/.config/opencode/logs/dcp/`
 - **`model`** (string, optional) - Specific model for analysis (e.g., `"anthropic/claude-haiku-4-5"`). Uses session model or smart fallbacks when not specified.
 - **`showModelErrorToasts`** (boolean, default: `true`) - Show notifications when model selection falls back
 - **`pruningMode`** (string, default: `"smart"`) - Pruning strategy:
