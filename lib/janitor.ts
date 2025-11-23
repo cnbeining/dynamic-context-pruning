@@ -1,4 +1,3 @@
-import { generateObject } from "ai"
 import { z } from "zod"
 import type { Logger } from "./logger"
 import type { StateManager } from "./state"
@@ -327,6 +326,9 @@ export class Janitor {
                         totalPrunedBeforeAnalysis: allPrunedSoFar.length,
                         prunedIds: allPrunedSoFar.slice(0, 5) // Show first 5
                     })
+
+                    // Lazy import - only load the 2.8MB ai package when actually needed
+                    const { generateObject } = await import('ai')
 
                     // Analyze which tool calls are obsolete
                     const result = await generateObject({

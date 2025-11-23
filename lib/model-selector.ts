@@ -4,10 +4,12 @@
  * This module handles intelligent model selection for the DCP plugin's analysis tasks.
  * It attempts to use the same model as the current session, with fallbacks to other
  * available models when needed.
+ * 
+ * NOTE: OpencodeAI is lazily imported to avoid loading the 812KB package during
+ * plugin initialization. The package is only loaded when model selection is needed.
  */
 
 import type { LanguageModel } from 'ai';
-import { OpencodeAI } from '@tarquinen/opencode-auth-provider';
 import type { Logger } from './logger';
 
 export interface ModelInfo {
@@ -82,6 +84,9 @@ export async function selectModel(
     configModel?: string
 ): Promise<ModelSelectionResult> {
     logger?.info('model-selector', 'Model selection started', { currentModel, configModel });
+    
+    // Lazy import - only load the 812KB auth provider package when actually needed
+    const { OpencodeAI } = await import('@tarquinen/opencode-auth-provider');
     const opencodeAI = new OpencodeAI();
 
     let failedModelInfo: ModelInfo | undefined;
