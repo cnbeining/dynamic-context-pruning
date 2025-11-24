@@ -25,12 +25,16 @@ function minimizeMessages(messages: any[], alreadyPrunedIds?: string[], protecte
                 })
                 .map((part: any) => {
                     // For text parts, keep the text content (needed for user intent & retention requests)
-                    if (part.type === 'text') {
-                        return {
-                            type: 'text',
-                            text: part.text
-                        }
-                    }
+        if (part.type === 'text') {
+            // Filter out ignored messages (e.g., DCP summary UI messages)
+            if (part.ignored) {
+                return null
+            }
+            return {
+                type: 'text',
+                text: part.text
+            }
+        }
 
                     // For tool parts, keep what's needed for pruning decisions
                     if (part.type === 'tool') {
@@ -88,6 +92,9 @@ function minimizeMessages(messages: any[], alreadyPrunedIds?: string[], protecte
         }
 
         return minimized
+    }).filter(msg => {
+        // Filter out messages that have no parts (e.g., only contained ignored messages)
+        return msg.parts && msg.parts.length > 0
     })
 }
 
