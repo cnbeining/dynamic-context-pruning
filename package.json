@@ -14,10 +14,15 @@
         "prepublishOnly": "npm run build",
         "dev": "opencode plugin dev",
         "typecheck": "npm run generate:prompts && tsc --noEmit",
-        "test": "node --import tsx --test tests/*.test.ts",
+        "test": "node --import tsx --test \"tests/**/*.test.ts\"",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "dcp": "tsx scripts/print.ts"
+        "dcp": "tsx scripts/print.ts",
+        "dcp:mcp": "tsx scripts/claude-dcp.ts mcp",
+        "dcp:hook:presend": "tsx scripts/claude-dcp.ts hook-presend",
+        "dcp:hook:postresponse": "tsx scripts/claude-dcp.ts hook-postresponse",
+        "claude:dcp:install": "tsx scripts/claude-dcp.ts install",
+        "claude:dcp:uninstall": "tsx scripts/claude-dcp.ts uninstall"
     },
     "keywords": [
         "opencode",

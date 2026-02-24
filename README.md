@@ -22,6 +22,36 @@ Using `@latest` ensures you always get the newest version automatically when Ope
 
 Restart OpenCode. The plugin will automatically start optimizing your sessions.
 
+## Claude Code (MCP + Hooks Preview)
+
+This repository now includes an in-progress Claude Code runtime under `lib/claude/`.
+
+Install managed Claude settings entries:
+
+```bash
+npm run claude:dcp:install
+```
+
+Remove managed entries:
+
+```bash
+npm run claude:dcp:uninstall
+```
+
+These commands manage DCP-owned `mcpServers.dcp` and `hooks.dcp` entries in `~/.claude/settings.json`.
+
+Claude config locations used by this porting preview:
+
+- Global settings: `~/.claude/settings.json`
+- Project design + implementation docs: `docs/plans/`
+
+Current command and behavior surface:
+
+- `npm run dcp:mcp -- <prune|distill|compress> <json-args>` dispatches MCP handlers.
+- `npm run dcp:hook:presend -- <json-context>` runs the pre-send hook pipeline.
+- `npm run dcp:hook:postresponse -- <json-context>` runs the post-response hook pipeline.
+- `@dcp <command> [args...]` parsing is available through `parseDcpCommand` in the hook router.
+
 ## How Pruning Works
 
 DCP uses multiple tools and strategies to reduce context size:
