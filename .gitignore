@@ -40,4 +40,7 @@ test-update.ts
 docs/
 SCHEMA_NOTES.md
 
+# Local development worktrees
+.worktrees/
+
 repomix-output.xml
